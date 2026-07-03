@@ -12,7 +12,7 @@ This project is the NeoForge port of the **GugleCarpetAddition (GCA)** mod.
 
 ## Dependencies
 
-- **Carpet: NeoForged** (version ≥ 1.4.147)
+- **Carpet: NeoForged** (version `neoforge-carpet-1.21.1-1.0.8+v251027` or compatible)
 
 ## Features
 
