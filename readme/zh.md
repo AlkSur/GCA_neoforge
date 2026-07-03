@@ -12,7 +12,7 @@ GugleCarpetAddition 的 NeoForge 移植版本。从 Fabric 移植到 NeoForge。
 
 ## 前置模组
 
-- **Carpet: NeoForged** (版本 ≥ 1.4.147)
+- **Carpet: NeoForged** (版本 `neoforge-carpet-1.21.1-1.0.8+v251027` 或兼容版本)
 
 ## 功能特性
 
