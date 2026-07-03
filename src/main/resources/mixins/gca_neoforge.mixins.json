@@ -1,0 +1,32 @@
+{
+    "required":  true,
+    "minVersion":  "0.8",
+    "package":  "dev.dubhe.gugle.carpet.mixin",
+    "compatibilityLevel":  "JAVA_21",
+    "mixins":  [
+                   "AbstractContainerMenuAccessor",
+                   "AbstractContainerMenuMixin",
+                   "ActionAccessor",
+                   "APAccessor",
+                   "AxeItemMixin",
+                   "ChestMenuMixin",
+                   "CommandsMixin",
+                   "EntityInvoker",
+                   "FenceGateBlockMixin",
+                   "FishingHookMixin",
+                   "ItemFrameMixin",
+                   "ItemStackMixin",
+                   "NaturalSpawnerMixin",
+                   "PlayerAccessor",
+                   "PlayerCommandMixin",
+                   "PlayerMixin",
+                   "ServerGamePacketListenerImplMixin",
+                   "ServerLevelMixin",
+                   "ServerPlaceRecipeMixin",
+                   "SignBlockMixin",
+                   "SlotMixin"
+               ],
+    "injectors":  {
+                      "defaultRequire":  0
+                  }
+}

@@ -1,0 +1,94 @@
+plugins {
+    id "java-library"
+    id "net.neoforged.moddev" version "2.0.107"
+    id "idea"
+}
+
+version = "${mod_version}"
+group = "dev.dubhe.gugle"
+base { archivesName = archives_base_name }
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+// Prevent Gradle from adding BOM to processed files
+System.setProperty("file.encoding", "UTF-8")
+
+neoForge {
+    version = project.neo_version
+
+    accessTransformers = project.files("src/main/resources/META-INF/accesstransformer.cfg")
+
+    runs {
+        client {
+            client()
+            systemProperty "neoforge.enabledGameTestNamespaces", mod_id
+        }
+        server {
+            server()
+            programArgument "--nogui"
+            systemProperty "neoforge.enabledGameTestNamespaces", mod_id
+        }
+        configureEach {
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url = "https://jitpack.io" }
+    maven { url = "https://maven.neoforged.net/releases" }
+}
+
+dependencies {
+    implementation "com.github.chililisoup:neoforge-carpet:${neoforge_carpet_version}"
+    implementation "jep:jep:${jep_version}"
+}
+
+configurations {
+    runtimeClasspath.extendsFrom localRuntime
+}
+
+tasks.withType(ProcessResources).configureEach {
+    // Ensure output files are UTF-8 without BOM
+    filteringCharset = "UTF-8"
+
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            neo_version_range      : neo_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            version                : version,
+            mod_authors            : mod_authors,
+            mod_credits            : mod_credits,
+            mod_description        : mod_description,
+            mod_issues             : mod_issues,
+            mod_homepage           : mod_homepage
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(["META-INF/neoforge.mods.toml"]) {
+        expand replaceProperties + [project: project]
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}

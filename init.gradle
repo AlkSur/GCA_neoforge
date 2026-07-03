@@ -1,0 +1,11 @@
+// init.gradle — 阿里云镜像源（NeoForge 官方源在 settings.gradle 中单独配置）
+allprojects {
+    buildscriptRepositories {
+        maven { url "https://maven.aliyun.com/repository/gradle-plugin/" }
+        maven { url "https://maven.aliyun.com/repository/public/" }
+    }
+    repositories {
+        maven { url "https://maven.aliyun.com/repository/public/" }
+        maven { url "https://maven.aliyun.com/repository/gradle-plugin/" }
+    }
+}
