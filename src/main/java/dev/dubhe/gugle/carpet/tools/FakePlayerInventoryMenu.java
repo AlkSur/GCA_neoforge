@@ -30,35 +30,44 @@ public class FakePlayerInventoryMenu extends ChestMenu {
             ItemStack slotStack = slot.getItem();
             remainingItem = slotStack.copy();
             if (slotIndex < 54) {
+                // Move from container (fake player inv) to player inventory
                 AbstractContainerMenuAccessor accessor = (AbstractContainerMenuAccessor) (chestMenu);
                 if (!accessor.invokerMoveItemStackTo(slotStack, 54, chestMenu.slots.size(), true)) {
-                    return ItemStack.EMPTY;
+                    // Nothing could be moved, return the full original stack
+                    return remainingItem;
                 }
             } else if (slotStack.getItem() instanceof ArmorItem armorItem) {
-                // 如果是盔甲，移动到盔甲槽
                 int ordinal = armorItem.getType().ordinal();
-                if (FakePlayerInventoryMenu.moveToArmor(chestMenu, slotStack, ordinal) || moveToInventory(chestMenu, slotStack)) {
-                    return ItemStack.EMPTY;
+                // Try armor slot first, then general inventory
+                boolean movedArmor = moveToArmor(chestMenu, slotStack, ordinal);
+                boolean movedInv = moveToInventory(chestMenu, slotStack);
+                if (!movedArmor && !movedInv) {
+                    return remainingItem;
                 }
             } else if (slotStack.is(Items.ELYTRA)) {
-                // 如果是鞘翅，移动到盔甲槽
-                if (FakePlayerInventoryMenu.moveToArmor(chestMenu, slotStack, 1) || moveToInventory(chestMenu, slotStack)) {
-                    return ItemStack.EMPTY;
+                boolean movedArmor = moveToArmor(chestMenu, slotStack, 1);
+                boolean movedInv = moveToInventory(chestMenu, slotStack);
+                if (!movedArmor && !movedInv) {
+                    return remainingItem;
                 }
             } else if (slotStack.has(DataComponents.FOOD)) {
-                // 如果是食物，移动到副手
-                if (FakePlayerInventoryMenu.moveToOffHand(chestMenu, slotStack) || moveToInventory(chestMenu, slotStack)) {
-                    return ItemStack.EMPTY;
+                boolean movedOffhand = moveToOffHand(chestMenu, slotStack);
+                boolean movedInv = moveToInventory(chestMenu, slotStack);
+                if (!movedOffhand && !movedInv) {
+                    return remainingItem;
                 }
-            } else if (moveToInventory(chestMenu, slotStack)) {
-                // 物品栏没有剩余空间了，移动到盔甲和副手
-                AbstractContainerMenuAccessor accessor = (AbstractContainerMenuAccessor) (chestMenu);
-                if (accessor.invokerMoveItemStackTo(slotStack, 1, 8, false)) {
-                    return ItemStack.EMPTY;
+            } else {
+                // General item: try inventory first
+                boolean movedInv = moveToInventory(chestMenu, slotStack);
+                if (!movedInv) {
+                    // Inventory full, try armor/offhand area (slots 1-8)
+                    AbstractContainerMenuAccessor accessor = (AbstractContainerMenuAccessor) (chestMenu);
+                    if (!accessor.invokerMoveItemStackTo(slotStack, 1, 8, false)) {
+                        return remainingItem;
+                    }
                 }
-                // 其它物品移动的物品栏中
-                return ItemStack.EMPTY;
             }
+            // Update the slot after modifications
             if (slotStack.isEmpty()) {
                 slot.setByPlayer(ItemStack.EMPTY);
             } else {
@@ -68,22 +77,21 @@ public class FakePlayerInventoryMenu extends ChestMenu {
         return remainingItem;
     }
 
-    // 移动到副手
+    // Move item to offhand slot (slot 7)
     private static boolean moveToOffHand(ChestMenu chestMenu, ItemStack slotStack) {
         AbstractContainerMenuAccessor accessor = (AbstractContainerMenuAccessor) (chestMenu);
         return accessor.invokerMoveItemStackTo(slotStack, 7, 8, false);
     }
 
-    // 移动到盔甲槽
+    // Move item to the specific armor slot by ordinal (helmet=0, chestplate=1, leggings=2, boots=3)
     private static boolean moveToArmor(ChestMenu chestMenu, ItemStack slotStack, int ordinal) {
         AbstractContainerMenuAccessor accessor = (AbstractContainerMenuAccessor) (chestMenu);
         return accessor.invokerMoveItemStackTo(slotStack, ordinal + 1, ordinal + 2, false);
     }
 
-    // 将物品移动的物品栏
+    // Move item to inventory slots 18-53 (lower half of the 6-row container)
     private static boolean moveToInventory(ChestMenu chestMenu, ItemStack slotStack) {
         AbstractContainerMenuAccessor accessor = (AbstractContainerMenuAccessor) (chestMenu);
-        return !accessor.invokerMoveItemStackTo(slotStack, 18, 54, false);
+        return accessor.invokerMoveItemStackTo(slotStack, 18, 54, false);
     }
 }
-

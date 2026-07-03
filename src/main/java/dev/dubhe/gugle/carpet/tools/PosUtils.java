@@ -17,19 +17,37 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.util.List;
 
 public class PosUtils {
+
+    private static ChatFormatting dimColor(ResourceKey<Level> dim) {
+        if (dim == Level.OVERWORLD) return ChatFormatting.GREEN;
+        if (dim == Level.NETHER) return ChatFormatting.RED;
+        if (dim == Level.END) return ChatFormatting.LIGHT_PURPLE;
+        return ChatFormatting.AQUA;
+    }
+
+    private static ChatFormatting oppositeDimColor(ResourceKey<Level> dim) {
+        if (dim == Level.OVERWORLD) return ChatFormatting.RED;
+        if (dim == Level.NETHER) return ChatFormatting.GREEN;
+        return ChatFormatting.AQUA;
+    }
+
+    private static int xaeroColor(ResourceKey<Level> dimType) {
+        if (dimType == Level.OVERWORLD) return 10;
+        if (dimType == Level.NETHER) return 12;
+        if (dimType == Level.END) return 13;
+        return 11;
+    }
+
     public static @NotNull MutableComponent xaero(String desc, double x, double y, double z, @NotNull ResourceKey<Level> dimType) {
-        int color = dimType == Level.OVERWORLD ? 10 :
-            dimType == Level.NETHER ? 12 :
-                dimType == Level.END ? 13 : 11;
         return Component.literal(
             "xaero-waypoint:%s:%s:%.0f:%.0f:%.0f:%d:false:0:Internal-%s-waypoints"
                 .formatted(
                     desc,
-                    desc.substring(0, 1),
+                    desc.isEmpty() ? "" : desc.substring(0, 1),
                     x,
                     y,
                     z,
-                    color,
+                    xaeroColor(dimType),
                     dimType.location().getPath()
                 )
         );
@@ -38,15 +56,7 @@ public class PosUtils {
     public static @NotNull @Unmodifiable List<MutableComponent> pos(String desc, double x, double y, double z, @NotNull ResourceKey<Level> dimension) {
         MutableComponent pos = Component.literal("[%.1f, %.1f, %.1f]".formatted(x, y, z)).withStyle(
             Style.EMPTY
-                .applyFormat(
-                    dimension == Level.OVERWORLD ?
-                        ChatFormatting.GREEN :
-                        dimension == Level.NETHER ?
-                            ChatFormatting.RED :
-                            dimension == Level.END ?
-                                ChatFormatting.LIGHT_PURPLE :
-                                ChatFormatting.AQUA
-                )
+                .applyFormat(dimColor(dimension))
                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(dimension.location().toString())))
         );
         double scale = 0;
@@ -60,13 +70,7 @@ public class PosUtils {
         }
         MutableComponent toPos = Component.literal("[%.1f, %.1f, %.1f]".formatted(x * scale, y, z * scale)).withStyle(
             Style.EMPTY
-                .applyFormat(
-                    dimension == Level.OVERWORLD ?
-                        ChatFormatting.RED :
-                        dimension == Level.NETHER ?
-                            ChatFormatting.GREEN :
-                            ChatFormatting.AQUA
-                )
+                .applyFormat(oppositeDimColor(dimension))
                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(toDimension.location().toString())))
         );
         return scale > 0 ?
@@ -85,4 +89,3 @@ public class PosUtils {
         return List.of(component, pos.get(1));
     }
 }
-

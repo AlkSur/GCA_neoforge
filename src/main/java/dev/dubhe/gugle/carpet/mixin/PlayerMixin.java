@@ -32,8 +32,10 @@ abstract class PlayerMixin {
         if (gca$self instanceof EntityPlayerMPFake fakePlayer && fakePlayer.isAlive()) {
             Map.Entry<FakePlayerInventoryContainer, FakePlayerEnderChestContainer> entry
                     = GcaExtension.fakePlayerInventoryContainerMap.get(gca$self);
-            entry.getKey().tick();
-            entry.getValue().tick();
+            if (entry != null) {
+                entry.getKey().tick();
+                entry.getValue().tick();
+            }
         } else if (gca$self.level().isClientSide) {
             if (gca$self.containerMenu instanceof ClientMenuTick tick) {
                 tick.tick();
@@ -44,13 +46,11 @@ abstract class PlayerMixin {
     @WrapOperation(method = "interactOn", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;interact(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/InteractionHand;)Lnet/minecraft/world/InteractionResult;"))
     private InteractionResult interactOn(Entity entity, @NotNull Player player, InteractionHand hand, Operation<InteractionResult> original) {
         if (player.level().isClientSide()) {
-            // 客户端在交互前要先判断一下当前交互的实体是不是玩家，这用来防止意外的使用物品功能
             if (entity instanceof Player && ClientUtils.isFakePlayer(player)) {
                 return InteractionResult.CONSUME;
             }
         } else {
             if ((GcaSetting.openFakePlayerInventory || SettingUtils.openFakePlayerEnderChest(player)) && entity instanceof EntityPlayerMPFake fakePlayer) {
-                // 打开物品栏
                 InteractionResult result = this.openInventory(player, fakePlayer);
                 if (result != InteractionResult.PASS) {
                     player.stopUsingItem();
@@ -65,7 +65,6 @@ abstract class PlayerMixin {
     private InteractionResult openInventory(@NotNull Player player, EntityPlayerMPFake fakePlayer) {
         SimpleMenuProvider provider;
         if (player.isShiftKeyDown()) {
-            // 打开末影箱
             if (SettingUtils.openFakePlayerEnderChest(player)) {
                 provider = new SimpleMenuProvider(
                         (i, inventory, p) -> ChestMenu.sixRows(
@@ -75,7 +74,6 @@ abstract class PlayerMixin {
                         ComponentTranslate.trans("gca.player.ender_chest", fakePlayer.getDisplayName())
                 );
             } else {
-                // 打开额外功能菜单
                 provider = new SimpleMenuProvider(
                         (i, inventory, p) -> ChestMenu.threeRows(
                                 i, inventory,
@@ -85,7 +83,6 @@ abstract class PlayerMixin {
                 );
             }
         } else if (GcaSetting.openFakePlayerInventory) {
-            // 打开物品栏
             provider = new SimpleMenuProvider(
                     (i, inventory, p) -> new FakePlayerInventoryMenu(
                             i, inventory,
@@ -100,4 +97,3 @@ abstract class PlayerMixin {
         return InteractionResult.CONSUME;
     }
 }
-

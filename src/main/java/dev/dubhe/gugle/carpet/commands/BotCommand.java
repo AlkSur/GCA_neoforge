@@ -429,7 +429,7 @@ public class BotCommand {
         }
         BotInfo botInfo = BOT_INFO.map.getOrDefault(name, null);
         if (botInfo == null) {
-            failure.accept(Component.literal("%s is not exist."));
+            failure.accept(Component.literal("%s is not exist.".formatted(name)));
             return false;
         }
         boolean success = false;
@@ -447,7 +447,6 @@ public class BotCommand {
                 }
                 GameProfile finalGP = gameprofile;
                 SkullBlockEntity.fetchGameProfile(gameprofile.getName()).thenAcceptAsync((p) -> {
-                    System.out.println(1);
                     GameProfile current = finalGP;
                     if (p.isPresent()) current = p.get();
                     if (worldIn == null) return;

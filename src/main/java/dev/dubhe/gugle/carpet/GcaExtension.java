@@ -54,7 +54,7 @@ public class GcaExtension implements CarpetExtension {
         .setPrettyPrinting()
         .registerTypeHierarchyAdapter(ResourceKey.class, new DimTypeSerializer())
         .create();
-    public static String MOD_ID = "gca_neoforge";
+    public static final String MOD_ID = "gca_neoforge";
     public static final Logger LOGGER = LogManager.getLogger(MOD_ID);
 
     public static @NotNull ResourceLocation id(String path) {

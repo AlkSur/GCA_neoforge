@@ -9,9 +9,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.function.BooleanSupplier;
 
 @Mixin(ServerLevel.class)
@@ -22,18 +19,12 @@ abstract class ServerLevelMixin {
     @Inject(method = "tick", at = @At("RETURN"))
     private void tick(BooleanSupplier hasTimeLeft, CallbackInfo ci) {
         long gameTime = gca$self.getLevel().getGameTime();
-        List<Map.Entry<Long, Consumer>> remove = new ArrayList<>();
-        for (Map.Entry<Long, Consumer> pair : GcaExtension.planFunction) {
+        GcaExtension.planFunction.removeIf(pair -> {
             if (pair.getKey() == gameTime) {
                 pair.getValue().accept();
-                remove.add(pair);
-            } else if (pair.getKey() < gameTime) {
-                remove.add(pair);
+                return true;
             }
-        }
-        for (Map.Entry<Long, Consumer> pair : remove) {
-            GcaExtension.planFunction.remove(pair);
-        }
+            return pair.getKey() < gameTime;
+        });
     }
 }
-

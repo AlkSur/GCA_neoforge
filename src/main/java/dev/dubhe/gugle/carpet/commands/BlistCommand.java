@@ -56,7 +56,7 @@ public class BlistCommand {
                             Commands.argument("targets", GameProfileArgument.gameProfile())
                                 .executes(BlistCommand::add)
                                 .then(
-                                    Commands.argument("reson", StringArgumentType.greedyString())
+                                    Commands.argument("reason", StringArgumentType.greedyString())
                                         .executes(BlistCommand::add)
                                 )
                         )
@@ -78,7 +78,7 @@ public class BlistCommand {
         int i = 0;
         Component component = null;
         try {
-            component = Component.literal(StringArgumentType.getString(context, "reson"));
+            component = Component.literal(StringArgumentType.getString(context, "reason"));
         } catch (IllegalArgumentException ignored) {
         }
         for (GameProfile gameProfile : GameProfileArgument.getGameProfiles(context, "targets")) {

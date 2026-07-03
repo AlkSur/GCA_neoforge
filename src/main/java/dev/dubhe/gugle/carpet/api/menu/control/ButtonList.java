@@ -8,7 +8,7 @@ public abstract class ButtonList {
 
     public ButtonList(List<Button> buttons, boolean required) {
         this.buttons = buttons;
-        if (required) {
+        if (required && !buttons.isEmpty()) {
             buttons.get(0).turnOnWithoutFunction();
             for (Button button : this.buttons) {
                 button.addTurnOffFunction((() -> {

@@ -19,9 +19,9 @@ public class Color {
 
     public static final TextColor GOLD = TextColor.parseColor("#FFAA00").getOrThrow();
 
-    public static final TextColor GARY = TextColor.parseColor("#AAAAAA").getOrThrow();
+    public static final TextColor GRAY = TextColor.parseColor("#AAAAAA").getOrThrow();
 
-    public static final TextColor DARK_GARY = TextColor.parseColor("#555555").getOrThrow();
+    public static final TextColor DARK_GRAY = TextColor.parseColor("#555555").getOrThrow();
 
     public static final TextColor BLUE = TextColor.parseColor("#5555FF").getOrThrow();
 

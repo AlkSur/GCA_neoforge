@@ -20,7 +20,8 @@ import java.util.Objects;
 @SuppressWarnings("unused")
 public class ComponentTranslate {
 
-    private final Map<String, String> lang = getTranslations(CarpetSettings.language);
+    private static Map<String, String> lang = null;
+    private static String loadedLanguage = null;
 
     public static Component trans(String key, Object... args) {
         return trans(key, null, args);
@@ -31,27 +32,38 @@ public class ComponentTranslate {
     }
 
     public static Component trans(String key, TextColor color, Style style, Object... args) {
-        ComponentTranslate componentTranslate = new ComponentTranslate();
+        loadLang();
         if (color != null) style = style.withColor(color);
-        if (componentTranslate.lang != null) {
-            Object[] callbackArgs = new Object[args.length];
-            for (int i = 0; i < args.length; i++) {
-                Object object = args[i];
-                if (object instanceof Component component) {
-                    object = component.getString();
+        if (lang != null) {
+            String translated = lang.get(key);
+            if (translated != null) {
+                Object[] callbackArgs = new Object[args.length];
+                for (int i = 0; i < args.length; i++) {
+                    Object object = args[i];
+                    if (object instanceof Component component) {
+                        object = component.getString();
+                    }
+                    callbackArgs[i] = object;
                 }
-                callbackArgs[i] = object;
-            }
-            String callback = componentTranslate.lang.get(key).formatted(callbackArgs);
-            try {
-                return Component
-                    .translatableWithFallback(key, callback, args)
-                    .setStyle(style);
-            } catch (ClassCastException | NullPointerException e) {
-                GcaExtension.LOGGER.error(e.getMessage(), e);
+                String callback = translated.formatted(callbackArgs);
+                try {
+                    return Component
+                        .translatableWithFallback(key, callback, args)
+                        .setStyle(style);
+                } catch (ClassCastException | NullPointerException e) {
+                    GcaExtension.LOGGER.error(e.getMessage(), e);
+                }
             }
         }
         return Component.translatable(key, args);
+    }
+
+    public static void loadLang() {
+        String currentLang = CarpetSettings.language;
+        if (lang == null || !currentLang.equals(loadedLanguage)) {
+            lang = getTranslations(currentLang);
+            loadedLanguage = currentLang;
+        }
     }
 
     public static @Nullable Map<String, String> getTranslations(String lang) {
@@ -84,4 +96,3 @@ public class ComponentTranslate {
         }.getType());
     }
 }
-
