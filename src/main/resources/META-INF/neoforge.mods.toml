@@ -11,6 +11,7 @@ displayURL = "${mod_homepage}"
 authors = "AlkSur"
 credits = "Original author: Gugle, ported to NeoForge by AlkSur"
 description = "GugleCarpetAddition for NeoForge. Ported from Fabric to NeoForge. Original author: Gugle, NeoForge port by AlkSur."
+logoFile = "gca_neoforge.png"
 
 [[mixins]]
 config = "mixins/gca_neoforge.mixins.json"
