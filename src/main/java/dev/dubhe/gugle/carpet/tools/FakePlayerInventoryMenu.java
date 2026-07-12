@@ -33,8 +33,8 @@ public class FakePlayerInventoryMenu extends ChestMenu {
                 // Move from container (fake player inv) to player inventory
                 AbstractContainerMenuAccessor accessor = (AbstractContainerMenuAccessor) (chestMenu);
                 if (!accessor.invokerMoveItemStackTo(slotStack, 54, chestMenu.slots.size(), true)) {
-                    // Nothing could be moved, return the full original stack
-                    return remainingItem;
+                    // Nothing could be moved; return EMPTY so doClick's while-loop stops
+                    return ItemStack.EMPTY;
                 }
             } else if (slotStack.getItem() instanceof ArmorItem armorItem) {
                 int ordinal = armorItem.getType().ordinal();
@@ -42,19 +42,19 @@ public class FakePlayerInventoryMenu extends ChestMenu {
                 boolean movedArmor = moveToArmor(chestMenu, slotStack, ordinal);
                 boolean movedInv = moveToInventory(chestMenu, slotStack);
                 if (!movedArmor && !movedInv) {
-                    return remainingItem;
+                    return ItemStack.EMPTY;
                 }
             } else if (slotStack.is(Items.ELYTRA)) {
                 boolean movedArmor = moveToArmor(chestMenu, slotStack, 1);
                 boolean movedInv = moveToInventory(chestMenu, slotStack);
                 if (!movedArmor && !movedInv) {
-                    return remainingItem;
+                    return ItemStack.EMPTY;
                 }
             } else if (slotStack.has(DataComponents.FOOD)) {
                 boolean movedOffhand = moveToOffHand(chestMenu, slotStack);
                 boolean movedInv = moveToInventory(chestMenu, slotStack);
                 if (!movedOffhand && !movedInv) {
-                    return remainingItem;
+                    return ItemStack.EMPTY;
                 }
             } else {
                 // General item: try inventory first
@@ -63,7 +63,7 @@ public class FakePlayerInventoryMenu extends ChestMenu {
                     // Inventory full, try armor/offhand area (slots 1-8)
                     AbstractContainerMenuAccessor accessor = (AbstractContainerMenuAccessor) (chestMenu);
                     if (!accessor.invokerMoveItemStackTo(slotStack, 1, 8, false)) {
-                        return remainingItem;
+                        return ItemStack.EMPTY;
                     }
                 }
             }
